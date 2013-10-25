@@ -37,6 +37,34 @@ public class ReplayTest {
             }
         }
 
+        if(!Files.exists(Paths.get("./same1.txt"))){
+            Charset charset = Charset.forName("US-ASCII");
+            String s = "This is a sample file used for comparison.";
+            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("./same1.txt"), charset)) {
+                writer.write(s, 0, s.length());
+            } catch (IOException x) {
+                System.err.format("IOException: %s%n", x);
+            }
+        }
+        if(!Files.exists(Paths.get("./same2.txt"))){
+            Charset charset = Charset.forName("US-ASCII");
+            String s = "This is a sample file used for comparison.";
+            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("./same2.txt"), charset)) {
+                writer.write(s, 0, s.length());
+            } catch (IOException x) {
+                System.err.format("IOException: %s%n", x);
+            }
+        }
+        if(!Files.exists(Paths.get("./different1.txt"))){
+            Charset charset = Charset.forName("US-ASCII");
+            String s = "This is a different sample file used for comparison, with some diffs.";
+            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("./different1.txt"), charset)) {
+                writer.write(s, 0, s.length());
+            } catch (IOException x) {
+                System.err.format("IOException: %s%n", x);
+            }
+        }
+
     }
 
     @Test
@@ -170,6 +198,8 @@ public class ReplayTest {
 
     @Test
     public void testDiffFiles() throws Exception {
+        Boolean isSame = r.areFilesIdentical("./same1.txt","./same2.txt");
+        assertEquals((boolean)isSame,true);
 
     }
 

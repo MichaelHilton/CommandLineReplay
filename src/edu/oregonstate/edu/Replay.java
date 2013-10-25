@@ -1,5 +1,15 @@
 package edu.oregonstate.edu;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: michaelhilton
@@ -21,9 +31,24 @@ public class Replay {
     }
 
     public String replaceSubString(String initialString, String insertedString, int start, int length) {
-        //return null;  //To change body of created methods use File | Settings | File Templates.
         StringBuilder sb = new StringBuilder(initialString);
         sb.replace(start, start+length, insertedString);
         return sb.toString();
+    }
+
+    private List<String> FileContents(String filename)  {
+        Path filePath = Paths.get(filename);
+        List<String> allLines = null;
+        try{
+        allLines = Files.readAllLines(filePath, Charset.defaultCharset());
+        } catch (IOException ex){
+            ex.printStackTrace();
+        }
+        return allLines;
+    }
+
+    public Boolean areFilesIdentical(String fileName1, String fileName2) {
+        List<String> file1 = FileContents(fileName1);
+        return false;
     }
 }
