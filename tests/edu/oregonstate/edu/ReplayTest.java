@@ -197,10 +197,16 @@ public class ReplayTest {
     }
 
     @Test
-    public void testDiffFiles() throws Exception {
+    public void testSameFiles() throws Exception {
         Boolean isSame = r.areFilesIdentical("./same1.txt","./same2.txt");
         assertEquals((boolean)isSame,true);
-
     }
+    @Test
+    public void testDifferentFiles() throws Exception {
+        Boolean isSame = r.areFilesIdentical("./same1.txt","./different1.txt");
+        assertEquals((boolean)isSame,false);
+    }
+
+
 
 }
