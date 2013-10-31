@@ -1,6 +1,8 @@
 package edu.oregonstate.edu;
 
+import org.json.simple.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedWriter;
@@ -207,6 +209,42 @@ public class ReplayTest {
         assertEquals((boolean)isSame,false);
     }
 
+    @Test
+    public void testJSONParse() throws Exception {
+        String jsonString = "{\"IDE\":\"eclipse\",\"fullyQualifiedMain\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}";
+        JSONObject jObj = r.parseJSONString(jsonString);
+        assertEquals(jObj.get("IDE"),"eclipse");
+    }
 
+    @Test
+    public void testDispatchFileOpenEvent() throws Exception {
+        JSONObject jObj = r.parseJSONString("{\"IDE\":\"eclipse\",\"fullyQualifiedMain\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}");
+        String dest = r.dispatchJSON(jObj);
+        assertEquals(dest,"fileOpen");
+    }
+    @Test
+    public void testDispatchFileCloseEvent() throws Exception {
+        JSONObject jObj = r.parseJSONString("{\"IDE\":\"eclipse\",\"fullyQualifiedMain\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileClose\"}");
+        String dest = r.dispatchJSON(jObj);
+        assertEquals(dest,"fileClose");
+    }
 
+    @Test
+    public void testDispatchTextChangeEvent() throws Exception {
+        JSONObject jObj = r.parseJSONString("{\"text\":\"t\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":60}");
+        String dest = r.dispatchJSON(jObj);
+        assertEquals(dest,"textChange");
+    }
+
+    @Test
+    public void testFileOpen() throws Exception {
+        String jsonString = "{\"IDE\":\"eclipse\",\"fullyQualifiedMain\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}";
+        JSONObject jObj = r.parseJSONString(jsonString);
+        r.openFile(jObj);
+    }
+
+    @Ignore
+    public void testIsFileOpen() throws Exception {
+
+    }
 }
