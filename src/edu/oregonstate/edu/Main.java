@@ -10,6 +10,7 @@ public class Main {
         }
         Replay r = new Replay();
         r.replayFile(args[0]);
+        r.closeAllFiles();
 
     }
 }
