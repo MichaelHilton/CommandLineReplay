@@ -218,7 +218,7 @@ public class ReplayTest {
 
     @Test
     public void testDispatchFileOpenEvent() throws Exception {
-        JSONObject jObj = r.parseJSONString("{\"IDE\":\"eclipse\",\"fullyQualifiedMain\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}");
+        JSONObject jObj = r.parseJSONString("{\"IDE\":\"eclipse\",\"fullyQualifiedMain\":\"sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}");
         String dest = r.dispatchJSON(jObj);
         assertEquals(dest,"fileOpen");
     }
@@ -240,11 +240,26 @@ public class ReplayTest {
     public void testFileOpen() throws Exception {
         String jsonString = "{\"IDE\":\"eclipse\",\"fullyQualifiedMain\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}";
         JSONObject jObj = r.parseJSONString(jsonString);
-        r.openFile(jObj);
+        String fileName = jObj.get("fullyQualifiedMain").toString();
+        r.openFile(fileName);
+        assertEquals(r.isFileOpen(fileName),true);
+        //assertEquals(jObj.get("fullyQualifiedMain").toString(),r.allOpenFiles.get(0).getFileName());
     }
 
     @Ignore
     public void testIsFileOpen() throws Exception {
+        String jsonString = "{\"IDE\":\"eclipse\",\"fullyQualifiedMain\":\"\\/sampleProject\\/src\\/sampleProject\\/testClassOpen.java\",\"eventType\":\"fileOpen\"}";
+        JSONObject jObj = r.parseJSONString(jsonString);
+        Boolean isFileOpen = r.isFileOpen(jObj.get("fullyQualifiedMain").toString());
+        assertEquals((boolean)isFileOpen,false);
+
+    }
+
+    @Test
+    public void testAddOpenFiles() throws Exception {
+        String fileName = "\\/sampleProject\\/src\\/sampleProject\\/testClassOpen.java";
+        String contents = "Initial File Contents";
+        //r.addOpenFile(fileName,contents);
 
     }
 }
