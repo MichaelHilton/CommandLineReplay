@@ -21,6 +21,7 @@ import java.util.*;
 public class Replay {
 
     protected List<OpenFile> allOpenFiles;
+    String replayDir = "";
 
     public Replay() {
         this.allOpenFiles = new ArrayList<OpenFile>();  ;
@@ -65,6 +66,9 @@ public class Replay {
     }
 
     public void replayFile(String fileName) {
+        if(replayDir.length()>0){
+            fileName = replayDir + "/"+ fileName;
+        }
         List<String> replayFileContents = getFileContentsList(fileName);
         // iterator loop
         //System.out.println("#1 iterator");
@@ -73,8 +77,11 @@ public class Replay {
             String currLine = iterator.next();
             currLine = currLine.replace("$@$", "");
             JSONObject curjObj = parseJSONString(currLine);
-            dispatchJSON(curjObj);
-            System.out.println(curjObj.toString());
+            if(curjObj!= null){
+                System.out.println(curjObj.toString());
+                dispatchJSON(curjObj);
+
+            }
 
         }
 
@@ -96,10 +103,14 @@ public class Replay {
                 break;
             case "fileClose":
                 eventDispatched = "fileClose";
+                closeFile(getFileNameFromJSON(jObj));
                 break;
             case "textChange":
                 eventDispatched = "textChange";
                 textChange(jObj);
+                break;
+            case "testRun":
+                System.out.println("testRun");
                 break;
             default:
                 throw new RuntimeException("Unknown eventType");
@@ -181,6 +192,9 @@ public class Replay {
         String fileName = jObj.get("sourceFile").toString();
         if (fileName.charAt(0) == '/') {
             fileName = fileName.substring(1);
+        }
+        if(replayDir.length()>0){
+            fileName = replayDir + "/" + fileName;
         }
         return fileName;
     }
@@ -278,7 +292,7 @@ public class Replay {
         final Path destDir = Paths.get(destDirname);
         //if the destination doesn't exist, create it
         if(Files.notExists(destDir)){
-            System.out.println(destDir + " does not exist. Creating...");
+            //System.out.println(destDir + " does not exist. Creating...");
             Files.createDirectories(destDir);
         }
 
@@ -292,7 +306,7 @@ public class Replay {
                                                  BasicFileAttributes attrs) throws IOException {
                     final Path destFile = Paths.get(destDir.toString(),
                             file.toString());
-                    System.out.printf("Extracting file %s to %s\n", file, destFile);
+                    //System.out.printf("Extracting file %s to %s\n", file, destFile);
                     Files.copy(file, destFile, StandardCopyOption.REPLACE_EXISTING);
                     return FileVisitResult.CONTINUE;
                 }
@@ -303,12 +317,27 @@ public class Replay {
                     final Path dirToCreate = Paths.get(destDir.toString(),
                             dir.toString());
                     if(Files.notExists(dirToCreate)){
-                        System.out.printf("Creating directory %s\n", dirToCreate);
+                        //System.out.printf("Creating directory %s\n", dirToCreate);
                         Files.createDirectory(dirToCreate);
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
         }
+    }
+
+    public void unzipInitialState(String zipName) {
+        if(replayDir.length()>0){
+            zipName = replayDir + "/" + zipName;
+        }
+        try {
+            unzip(zipName,replayDir) ;
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void setDir(String dir) {
+        replayDir =  dir;
     }
 }

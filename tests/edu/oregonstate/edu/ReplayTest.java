@@ -30,6 +30,7 @@ public class ReplayTest {
     @Before
     public void setUp() throws Exception {
         r = new Replay();
+        r.setDir("");
         if(!Files.exists(Paths.get("./testIO.txt"))){
             Charset charset = Charset.forName("US-ASCII");
             String s = "SampleFile";
@@ -241,7 +242,8 @@ public class ReplayTest {
     public void testFileOpen() throws Exception {
         String jsonString = "{\"IDE\":\"eclipse\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}";
         JSONObject jObj = r.parseJSONString(jsonString);
-        String fileName = jObj.get("sourceFile").toString();
+        String fileName = r.getFileNameFromJSON(jObj);
+        System.out.println("FILENAME:" + fileName);
         r.openFile(fileName);
         assertEquals(r.isFileOpen(fileName),true);
     }
