@@ -213,34 +213,34 @@ public class ReplayTest {
 
     @Test
     public void testJSONParse() throws Exception {
-        String jsonString = "{\"IDE\":\"eclipse\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}";
+        String jsonString = "{\"IDE\":\"eclipse\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}";
         JSONObject jObj = r.parseJSONString(jsonString);
         assertEquals(jObj.get("IDE"),"eclipse");
     }
 
     @Test
     public void testDispatchFileOpenEvent() throws Exception {
-        JSONObject jObj = r.parseJSONString("{\"IDE\":\"eclipse\",\"sourceFile\":\"sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}");
+        JSONObject jObj = r.parseJSONString("{\"IDE\":\"eclipse\",\"entityAddress\":\"sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}");
         String dest = r.dispatchJSON(jObj);
         assertEquals(dest,"fileOpen");
     }
     @Test
     public void testDispatchFileCloseEvent() throws Exception {
-        JSONObject jObj = r.parseJSONString("{\"IDE\":\"eclipse\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileClose\"}");
+        JSONObject jObj = r.parseJSONString("{\"IDE\":\"eclipse\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileClose\"}");
         String dest = r.dispatchJSON(jObj);
         assertEquals(dest,"fileClose");
     }
 
     @Test
     public void testDispatchTextChangeEvent() throws Exception {
-        JSONObject jObj = r.parseJSONString("{\"text\":\"t\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":2}");
+        JSONObject jObj = r.parseJSONString("{\"text\":\"t\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":2}");
         String dest = r.dispatchJSON(jObj);
         assertEquals(dest,"textChange");
     }
 
     @Test
     public void testFileOpen() throws Exception {
-        String jsonString = "{\"IDE\":\"eclipse\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}";
+        String jsonString = "{\"IDE\":\"eclipse\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"eventType\":\"fileOpen\"}";
         JSONObject jObj = r.parseJSONString(jsonString);
         String fileName = r.getFileNameFromJSON(jObj);
         System.out.println("FILENAME:" + fileName);
@@ -251,18 +251,18 @@ public class ReplayTest {
     @Test
     public void testCloseFileJSON() throws Exception {
         r.openFile("sampleProject/src/sampleProject/testClassOpen.java");
-        String jsonString = "{\"IDE\":\"eclipse\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClassOpen.java\",\"eventType\":\"fileClose\"}";
+        String jsonString = "{\"IDE\":\"eclipse\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/testClassOpen.java\",\"eventType\":\"fileClose\"}";
         JSONObject jObj = r.parseJSONString(jsonString);
-        Boolean isFileOpen = r.isFileOpen(jObj.get("sourceFile").toString());
+        Boolean isFileOpen = r.isFileOpen(jObj.get("entityAddress").toString());
         assertEquals((boolean)isFileOpen,false);
 
     }
 
     @Test
     public void testIsFileOpen() throws Exception {
-        String jsonString = "{\"IDE\":\"eclipse\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClassOpen.java\",\"eventType\":\"fileOpen\"}";
+        String jsonString = "{\"IDE\":\"eclipse\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/testClassOpen.java\",\"eventType\":\"fileOpen\"}";
         JSONObject jObj = r.parseJSONString(jsonString);
-        Boolean isFileOpen = r.isFileOpen(jObj.get("sourceFile").toString());
+        Boolean isFileOpen = r.isFileOpen(jObj.get("entityAddress").toString());
         assertEquals((boolean)isFileOpen,false);
 
     }
@@ -277,7 +277,7 @@ public class ReplayTest {
 
     @Test
     public void testGetFileNameFromJSON() throws Exception {
-        String JSONStr = "{\"text\":\"a\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":49}";
+        String JSONStr = "{\"text\":\"a\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":49}";
         //System.out.println("JSONStr"+JSONStr.toString());
         JSONObject jObj = r.parseJSONString(JSONStr);
         String fileName = r.getFileNameFromJSON(jObj);
@@ -286,7 +286,7 @@ public class ReplayTest {
 
     @Test
     public void testGetFileContentsString() throws Exception {
-        String JSONStr = "{\"text\":\"a\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":49}";
+        String JSONStr = "{\"text\":\"a\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/testClass.java\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":49}";
         JSONObject jObj = r.parseJSONString(JSONStr);
         String fileContents = r.getFileContentsString(r.getFileNameFromJSON(jObj));
         assertEquals(fileContents,"SAMPLE PRE DATA");
@@ -318,7 +318,7 @@ public class ReplayTest {
 
     @Test
     public void testGetTextFromObj() throws Exception {
-        String JSONStr = "{\"text\":\"a\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
+        String JSONStr = "{\"text\":\"a\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
         JSONObject jObj = r.parseJSONString(JSONStr);
         String text = r.getTextFromJSON(jObj);
         assertEquals("a",text);
@@ -326,7 +326,7 @@ public class ReplayTest {
 
     @Test
     public void testGetOffsetFromJSON() throws Exception {
-        String JSONStr = "{\"text\":\"a\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
+        String JSONStr = "{\"text\":\"a\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
         JSONObject jObj = r.parseJSONString(JSONStr);
         int offset = r.getOffsetFromJSON(jObj);
         assertEquals(4,offset);
@@ -335,7 +335,7 @@ public class ReplayTest {
     //TEST add change to File
     @Ignore
     public void testFileEdit() throws Exception {
-        String JSONStr = "{\"text\":\"a\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":49}";
+        String JSONStr = "{\"text\":\"a\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":49}";
         //System.out.println("JSONStr"+JSONStr.toString());
         JSONObject jObj = r.parseJSONString(JSONStr);
         String fileContents = r.getFileContentsString(r.getFileNameFromJSON(jObj));
@@ -344,7 +344,7 @@ public class ReplayTest {
 
     @Ignore
     public void testFileChange() throws Exception {
-        String JSONStr = "{\"text\":\"a\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
+        String JSONStr = "{\"text\":\"a\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
         JSONObject jObj = r.parseJSONString(JSONStr);
         String fileContents = r.getFileContentsString(r.getFileNameFromJSON(jObj));
         System.out.println("Filecontents:"+fileContents);
@@ -361,7 +361,7 @@ public class ReplayTest {
 
     @Test
     public void testTextChangeAdd() throws Exception {
-        String JSONStr = "{\"text\":\"a\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
+        String JSONStr = "{\"text\":\"a\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
         JSONObject jObj = r.parseJSONString(JSONStr);
         r.textChange(jObj);
         assertEquals(r.getFileContentsString(r.getFileNameFromJSON(jObj)),"TESTaESTESTEST");
@@ -369,7 +369,7 @@ public class ReplayTest {
 
     @Test
     public void testTextChangeDelete() throws Exception {
-        String JSONStr = "{\"text\":\"\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":3,\"eventType\":\"textChange\",\"offset\":0}";
+        String JSONStr = "{\"text\":\"\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":3,\"eventType\":\"textChange\",\"offset\":0}";
         JSONObject jObj = r.parseJSONString(JSONStr);
         r.textChange(jObj);
         assertEquals(r.getFileContentsString(r.getFileNameFromJSON(jObj)),"TESTESTEST");
@@ -377,7 +377,7 @@ public class ReplayTest {
 
     @Test
     public void testCloseFile() throws Exception {
-        String JSONStr = "{\"text\":\"a\",\"sourceFile\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
+        String JSONStr = "{\"text\":\"a\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"user\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
         JSONObject jObj = r.parseJSONString(JSONStr);
         String fileName = r.getFileNameFromJSON(jObj);
         r.openFile(fileName);
@@ -391,5 +391,11 @@ public class ReplayTest {
         assertEquals(r.getFileContentsString("text.txt"),"THIS IS A TEST FILE");
     }
 
-
+    @Test
+    public void testRefreshEvent() throws Exception {
+        String JSONStr = "{\"text\":\"NEW REFRESH TEXT\",\"entityAddress\":\"\\/sampleProject\\/src\\/sampleProject\\/test.txt\",\"changeOrigin\":\"refresh\",\"IDE\":\"eclipse\",\"len\":0,\"eventType\":\"textChange\",\"offset\":4}";
+        JSONObject jObj = r.parseJSONString(JSONStr);
+        r.textChange(jObj);
+        assertEquals(r.getFileContentsString(r.getFileNameFromJSON(jObj)),"NEW REFRESH TEXT");
+    }
 }

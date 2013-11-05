@@ -3,6 +3,7 @@ package edu.oregonstate.edu;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -112,6 +113,9 @@ public class Replay {
             case "testRun":
                 System.out.println("testRun");
                 break;
+            case "FileInit":
+                System.out.println("testRun");
+                break;
             default:
                 throw new RuntimeException("Unknown eventType");
 
@@ -123,14 +127,25 @@ public class Replay {
     protected void textChange(JSONObject jObj) {
         String fileName = getFileNameFromJSON(jObj);
         openFile(fileName);
-        String currFileContents = getFileContentsString(fileName);
-        int textReplaceLength = getLengthFromJSON(jObj);
-        if(textReplaceLength > 0){
-            currFileContents = removeSubString(currFileContents,getOffsetFromJSON(jObj),textReplaceLength);
+        String changeOrigin = getChangeOrigin(jObj);
+        String currFileContents;
+        if(changeOrigin.equals("refresh")){
+            currFileContents = getTextFromJSON(jObj);
+        }else{
+            currFileContents = getFileContentsString(fileName);
+            int textReplaceLength = getLengthFromJSON(jObj);
+            if(textReplaceLength > 0){
+                currFileContents = removeSubString(currFileContents,getOffsetFromJSON(jObj),textReplaceLength);
+            }
+            currFileContents = insertString(currFileContents,getTextFromJSON(jObj),getOffsetFromJSON(jObj));
         }
-        currFileContents = insertString(currFileContents,getTextFromJSON(jObj),getOffsetFromJSON(jObj));
+
         setFileContents(fileName,currFileContents) ;
 
+    }
+
+    private String getChangeOrigin(JSONObject jObj) {
+        return jObj.get("changeOrigin").toString();
     }
 
     private int getLengthFromJSON(JSONObject jObj) {
@@ -159,11 +174,14 @@ public class Replay {
 
     public String readFile(String fileName) {
         String fileContents = "";
-
-        //.println(fileName);
-        if(!Files.exists(Paths.get(fileName))) {
+        File f = new File(Paths.get(fileName).toUri()) ;
+        if(!f.exists()){
             try {
-                Files.createFile(Paths.get(fileName));
+                if(!f.getParentFile().exists()) {
+                    f.getParentFile().mkdirs();
+                }
+
+                f.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
@@ -189,7 +207,7 @@ public class Replay {
     }
 
     protected String getFileNameFromJSON(JSONObject jObj) {
-        String fileName = jObj.get("sourceFile").toString();
+        String fileName = jObj.get("entityAddress").toString();
         if (fileName.charAt(0) == '/') {
             fileName = fileName.substring(1);
         }
@@ -247,6 +265,8 @@ public class Replay {
     public void closeAllFiles() {
         for (int i = 0; i < allOpenFiles.size(); i++) {
             writeContentsToFile(allOpenFiles.get(i).getFileName(), allOpenFiles.get(i).getContents());
+        }
+        for (int i = 0; i < allOpenFiles.size(); i++) {
             if(isFileOpen(allOpenFiles.get(i).getFileName())){
                 openFile(allOpenFiles.get(i).getFileName());
                 closeFile(allOpenFiles.get(i).getFileName());
@@ -330,10 +350,12 @@ public class Replay {
         if(replayDir.length()>0){
             zipName = replayDir + "/" + zipName;
         }
+        if(Files.exists(Paths.get(zipName))){
         try {
             unzip(zipName,replayDir) ;
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         }
     }
 
